@@ -1,37 +1,44 @@
 package com.weboniselab.meghana.android.app.imagezoomexample;
 
+import android.opengl.Matrix;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
+import android.view.View;
+import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity {
+    ImageView mImageView;
+    ScaleGestureDetector mScaleGestureDetector;
+    android.graphics.Matrix mMatrix=new android.graphics.Matrix();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mImageView=(ImageView) findViewById(R.id.imageView);
+        mScaleGestureDetector = new ScaleGestureDetector(this,new ScaleListener());
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+    public boolean onTouchEvent(MotionEvent ev) {
+        mScaleGestureDetector.onTouchEvent(ev);
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+    private class ScaleListener extends ScaleGestureDetector.
+            SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            float scaleFactor = detector.getScaleFactor();
+            scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 5.0f));
+            mMatrix.setScale(scaleFactor, scaleFactor);
+            mImageView.setImageMatrix(mMatrix);
             return true;
         }
-
-        return super.onOptionsItemSelected(item);
     }
 }
